@@ -1,0 +1,61 @@
+﻿ID;Priorité;Nom;Secteur;Ville;Pays;Numéro WhatsApp;Code visuel;Activité;Message préparé
+DEMO-001;2;Madame Brice Fictif;Restauration;Yaoundé;Cameroun;+237 600 000 001;V2;votre restaurant;Bonjour Madame Brice Fictif, membre PROPULSION : -65 % sur votre site web pour votre restaurant. Je vous montre un exemple ? (message de démonstration)
+DEMO-002;3;Carine Démo;Beauté;Bafoussam;Cameroun;+237 600 000 002;V3;votre salon;
+DEMO-003;4;Dr Didier Testeur;Commerce;Abidjan;Côte d'Ivoire;+237 600 000 003;V1;votre boutique;Bonjour Dr Didier Testeur, membre PROPULSION : -65 % sur votre site web pour votre boutique. Je vous montre un exemple ? (message de démonstration)
+DEMO-004;5;Estelle Modèle;Santé;Libreville;Gabon;+237 600 000 004;;votre cabinet;
+DEMO-005;1;Monsieur Fabrice Essai;Transport;Douala;Cameroun;+237 600 000 005;V3;vos services de transport;Bonjour Monsieur Fabrice Essai, membre PROPULSION : -65 % sur votre site web pour vos services de transport. Je vous montre un exemple ? (message de démonstration)
+DEMO-006;2;Madame Gisèle Exemple;BTP;Yaoundé;Cameroun;+237 600 000 006;V1;la construction;
+DEMO-007;3;Hervé Fictif;Restauration;Bafoussam;Cameroun;+237 600 000 007;V2;votre restaurant;Bonjour Hervé Fictif, membre PROPULSION : -65 % sur votre site web pour votre restaurant. Je vous montre un exemple ? (message de démonstration)
+DEMO-008;4;Dr Inès Démo;Beauté;Abidjan;Côte d'Ivoire;+237 600 000 008;;votre salon;
+DEMO-009;5;Joël Testeur;Commerce;Libreville;Gabon;+237 600 000 009;V1;votre boutique;Bonjour Joël Testeur, membre PROPULSION : -65 % sur votre site web pour votre boutique. Je vous montre un exemple ? (message de démonstration)
+DEMO-010;1;Monsieur Karine Modèle;Santé;Douala;Cameroun;+237 600 000 010;V2;votre cabinet;
+DEMO-011;2;Madame Léon Essai;Transport;Yaoundé;Cameroun;+237 600 000 011;V3;vos services de transport;Bonjour Madame Léon Essai, membre PROPULSION : -65 % sur votre site web pour vos services de transport. Je vous montre un exemple ? (message de démonstration)
+DEMO-012;3;Mireille Exemple;BTP;Bafoussam;Cameroun;+237 600 000 012;;la construction;
+DEMO-013;4;Dr Noël Fictif;Restauration;Abidjan;Côte d'Ivoire;+237 600 000 013;V2;votre restaurant;Bonjour Dr Noël Fictif, membre PROPULSION : -65 % sur votre site web pour votre restaurant. Je vous montre un exemple ? (message de démonstration)
+DEMO-014;5;Odile Démo;Beauté;Libreville;Gabon;+237 600 000 014;V3;votre salon;
+DEMO-015;1;Monsieur Patrice Testeur;Commerce;Douala;Cameroun;+237 600 000 015;V1;votre boutique;Bonjour Monsieur Patrice Testeur, membre PROPULSION : -65 % sur votre site web pour votre boutique. Je vous montre un exemple ? (message de démonstration)
+DEMO-016;2;Madame Rose Modèle;Santé;Yaoundé;Cameroun;+237 600 000 016;;votre cabinet;
+DEMO-017;3;Serge Essai;Transport;Bafoussam;Cameroun;à vérifier;V3;vos services de transport;Bonjour Serge Essai, membre PROPULSION : -65 % sur votre site web pour vos services de transport. Je vous montre un exemple ? (message de démonstration)
+DEMO-018;4;Dr Thérèse Exemple;BTP;Abidjan;Côte d'Ivoire;+237 600 000 018;V1;la construction;
+DEMO-019;5;Ulrich Fictif;Restauration;Libreville;Gabon;+237 600 000 019;V2;votre restaurant;Bonjour Ulrich Fictif, membre PROPULSION : -65 % sur votre site web pour votre restaurant. Je vous montre un exemple ? (message de démonstration)
+DEMO-020;1;Monsieur Alain Démo;Beauté;Douala;Cameroun;+237 600 000 020;;votre salon;
+DEMO-021;2;Madame Brice Testeur;Commerce;Yaoundé;Cameroun;+237 600 000 021;V1;votre boutique;Bonjour Madame Brice Testeur, membre PROPULSION : -65 % sur votre site web pour votre boutique. Je vous montre un exemple ? (message de démonstration)
+DEMO-022;3;Carine Modèle;Santé;Bafoussam;Cameroun;+237 600 000 022;V2;votre cabinet;
+DEMO-023;4;Dr Didier Essai;Transport;Abidjan;Côte d'Ivoire;+237 600 000 023;V3;vos services de transport;Bonjour Dr Didier Essai, membre PROPULSION : -65 % sur votre site web pour vos services de transport. Je vous montre un exemple ? (message de démonstration)
+DEMO-024;5;Estelle Exemple;BTP;Libreville;Gabon;+237 600 000 024;;la construction;
+DEMO-025;1;Monsieur Fabrice Fictif;Restauration;Douala;Cameroun;+237 600 000 025;V2;votre restaurant;Bonjour Monsieur Fabrice Fictif, membre PROPULSION : -65 % sur votre site web pour votre restaurant. Je vous montre un exemple ? (message de démonstration)
+DEMO-026;2;Madame Gisèle Démo;Beauté;Yaoundé;Cameroun;+237 600 000 026;V3;votre salon;
+DEMO-027;3;Hervé Testeur;Commerce;Bafoussam;Cameroun;+237 600 000 027;V1;votre boutique;Bonjour Hervé Testeur, membre PROPULSION : -65 % sur votre site web pour votre boutique. Je vous montre un exemple ? (message de démonstration)
+DEMO-028;4;Dr Inès Modèle;Santé;Abidjan;Côte d'Ivoire;+237 600 000 028;;votre cabinet;
+DEMO-029;5;Joël Essai;Transport;Libreville;Gabon;+237 600 000 029;V3;vos services de transport;Bonjour Joël Essai, membre PROPULSION : -65 % sur votre site web pour vos services de transport. Je vous montre un exemple ? (message de démonstration)
+DEMO-030;1;Monsieur Karine Exemple;BTP;Douala;Cameroun;+237 600 000 030;V1;la construction;
+DEMO-031;2;Madame Léon Fictif;Restauration;Yaoundé;Cameroun;+237 600 000 031;V2;votre restaurant;Bonjour Madame Léon Fictif, membre PROPULSION : -65 % sur votre site web pour votre restaurant. Je vous montre un exemple ? (message de démonstration)
+DEMO-032;3;Mireille Démo;Beauté;Bafoussam;Cameroun;+237 600 000 032;;votre salon;
+DEMO-033;4;Dr Noël Testeur;Commerce;Abidjan;Côte d'Ivoire;+237 600 000 033;V1;votre boutique;Bonjour Dr Noël Testeur, membre PROPULSION : -65 % sur votre site web pour votre boutique. Je vous montre un exemple ? (message de démonstration)
+DEMO-034;5;Odile Modèle;Santé;Libreville;Gabon;à vérifier;V2;votre cabinet;
+DEMO-035;1;Monsieur Patrice Essai;Transport;Douala;Cameroun;+237 600 000 035;V3;vos services de transport;Bonjour Monsieur Patrice Essai, membre PROPULSION : -65 % sur votre site web pour vos services de transport. Je vous montre un exemple ? (message de démonstration)
+DEMO-036;2;Madame Rose Exemple;BTP;Yaoundé;Cameroun;+237 600 000 036;;la construction;
+DEMO-037;3;Serge Fictif;Restauration;Bafoussam;Cameroun;+237 600 000 037;V2;votre restaurant;Bonjour Serge Fictif, membre PROPULSION : -65 % sur votre site web pour votre restaurant. Je vous montre un exemple ? (message de démonstration)
+DEMO-038;4;Dr Thérèse Démo;Beauté;Abidjan;Côte d'Ivoire;+237 600 000 038;V3;votre salon;
+DEMO-039;5;Ulrich Testeur;Commerce;Libreville;Gabon;+237 600 000 039;V1;votre boutique;Bonjour Ulrich Testeur, membre PROPULSION : -65 % sur votre site web pour votre boutique. Je vous montre un exemple ? (message de démonstration)
+DEMO-040;1;Monsieur Alain Modèle;Santé;Douala;Cameroun;+237 600 000 040;;votre cabinet;
+DEMO-041;2;Madame Brice Essai;Transport;Yaoundé;Cameroun;+237 600 000 041;V3;vos services de transport;Bonjour Madame Brice Essai, membre PROPULSION : -65 % sur votre site web pour vos services de transport. Je vous montre un exemple ? (message de démonstration)
+DEMO-042;3;Carine Exemple;BTP;Bafoussam;Cameroun;+237 600 000 042;V1;la construction;
+DEMO-043;4;Dr Didier Fictif;Restauration;Abidjan;Côte d'Ivoire;+237 600 000 043;V2;votre restaurant;Bonjour Dr Didier Fictif, membre PROPULSION : -65 % sur votre site web pour votre restaurant. Je vous montre un exemple ? (message de démonstration)
+DEMO-044;5;Estelle Démo;Beauté;Libreville;Gabon;+237 600 000 044;;votre salon;
+DEMO-045;1;Monsieur Fabrice Testeur;Commerce;Douala;Cameroun;+237 600 000 045;V1;votre boutique;Bonjour Monsieur Fabrice Testeur, membre PROPULSION : -65 % sur votre site web pour votre boutique. Je vous montre un exemple ? (message de démonstration)
+DEMO-046;2;Madame Gisèle Modèle;Santé;Yaoundé;Cameroun;+237 600 000 046;V2;votre cabinet;
+DEMO-047;3;Hervé Essai;Transport;Bafoussam;Cameroun;+237 600 000 047;V3;vos services de transport;Bonjour Hervé Essai, membre PROPULSION : -65 % sur votre site web pour vos services de transport. Je vous montre un exemple ? (message de démonstration)
+DEMO-048;4;Dr Inès Exemple;BTP;Abidjan;Côte d'Ivoire;+237 600 000 048;;la construction;
+DEMO-049;5;Joël Fictif;Restauration;Libreville;Gabon;+237 600 000 049;V2;votre restaurant;Bonjour Joël Fictif, membre PROPULSION : -65 % sur votre site web pour votre restaurant. Je vous montre un exemple ? (message de démonstration)
+DEMO-050;1;Monsieur Karine Démo;Beauté;Douala;Cameroun;+237 600 000 050;V3;votre salon;
+DEMO-051;2;Madame Léon Testeur;Commerce;Yaoundé;Cameroun;à vérifier;V1;votre boutique;Bonjour Madame Léon Testeur, membre PROPULSION : -65 % sur votre site web pour votre boutique. Je vous montre un exemple ? (message de démonstration)
+DEMO-052;3;Mireille Modèle;Santé;Bafoussam;Cameroun;+237 600 000 052;;votre cabinet;
+DEMO-053;4;Dr Noël Essai;Transport;Abidjan;Côte d'Ivoire;+237 600 000 053;V3;vos services de transport;Bonjour Dr Noël Essai, membre PROPULSION : -65 % sur votre site web pour vos services de transport. Je vous montre un exemple ? (message de démonstration)
+DEMO-054;5;Odile Exemple;BTP;Libreville;Gabon;+237 600 000 054;V1;la construction;
+DEMO-055;1;Monsieur Patrice Fictif;Restauration;Douala;Cameroun;+237 600 000 055;V2;votre restaurant;Bonjour Monsieur Patrice Fictif, membre PROPULSION : -65 % sur votre site web pour votre restaurant. Je vous montre un exemple ? (message de démonstration)
+DEMO-056;2;Madame Rose Démo;Beauté;Yaoundé;Cameroun;+237 600 000 056;;votre salon;
+DEMO-057;3;Serge Testeur;Commerce;Bafoussam;Cameroun;+237 600 000 057;V1;votre boutique;Bonjour Serge Testeur, membre PROPULSION : -65 % sur votre site web pour votre boutique. Je vous montre un exemple ? (message de démonstration)
+DEMO-058;4;Dr Thérèse Modèle;Santé;Abidjan;Côte d'Ivoire;+237 600 000 058;V2;votre cabinet;
+DEMO-059;5;Ulrich Essai;Transport;Libreville;Gabon;+237 600 000 059;V3;vos services de transport;Bonjour Ulrich Essai, membre PROPULSION : -65 % sur votre site web pour vos services de transport. Je vous montre un exemple ? (message de démonstration)
+DEMO-060;1;Monsieur Alain Exemple;BTP;Douala;Cameroun;+237 600 000 060;;la construction;

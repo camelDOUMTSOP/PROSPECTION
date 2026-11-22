@@ -1,0 +1,6 @@
+prospects.*
+*.xlsx
+*.xls
+node_modules/
+Contacts_*.csv
+contacts*.csv

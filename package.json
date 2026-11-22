@@ -1,0 +1,9 @@
+{
+  "name": "prospection-goleadforge",
+  "private": true,
+  "type": "module",
+  "description": "Application de suivi de prospection (statique, GitHub Pages + Google Apps Script). Aucune dépendance.",
+  "scripts": {
+    "test": "node --test tests/*.test.js"
+  }
+}

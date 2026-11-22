@@ -79,7 +79,7 @@ Ce dépôt (`prospection`, **public**) contient uniquement l'application. Le fic
 
 1. Sur GitHub : **Settings > Pages > Build and deployment > Source : GitHub Actions** (une seule fois).
 2. Onglet **Actions** > « Publication GitHub Pages » > **Run workflow** pour la première publication (ensuite c'est automatique).
-3. Adresse de l'application : **https://cameldoumtsop.github.io/prospection/**
+3. Adresse de l'application : **https://cameldoumtsop.github.io/PROSPECTION/**
 
 > GitHub Pages est gratuit pour un dépôt **public**. Le dépôt peut être public sans risque : il ne contient ni prospect, ni jeton, ni URL du script.
 

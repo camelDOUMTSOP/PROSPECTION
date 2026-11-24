@@ -15,7 +15,7 @@ let P = [];                       // prospects préparés pour la recherche
 let D = { list: [], map: new Map() }; // état déduit de chaque prospect
 let today = L.todayISO();
 let tab = LS.get('tab', 'today');
-const ui = { suiviFilter: 'en_cours', suiviQuery: '', suiviLimit: 80, clientFilter: 'tous' };
+const ui = { suiviFilter: 'en_cours', suiviQuery: '', suiviLimit: 80, clientFilter: 'tous', envoiStatut: 'a_envoyer', envoiBloc: null, envoiOpen: null, envoiQuery: '' };
 
 function recompute() {
   today = L.todayISO();
@@ -973,13 +973,15 @@ function openWa(a, number, text, app, box) {
 }
 
 // ------------------------------------------------------------------ écran Aujourd'hui (§4.6)
-const planKey = () => `plan-${today}`;
-const getPlan = () => { try { return JSON.parse(LS.get(planKey(), '[]')); } catch { return []; } };
-const setPlan = (ids) => LS.set(planKey(), JSON.stringify([...new Set(ids)]));
+// La journée se remplit toute seule : relances dues + nouveaux prospects jusqu'à l'objectif du jour.
+// Les nouveaux sont pris dans l'ordre de priorité du fichier (regroupés par visuel) ; « Ajouter 30 de plus » dépasse l'objectif.
+const extraKey = () => `extra-${today}`;
+const getExtra = () => Number(LS.get(extraKey(), '0')) || 0;
 function todayData() {
   const { overdue, today: tod } = L.relancesDues(D.list, today);
-  const plan = getPlan().map((id) => D.map.get(id)).filter((d) => d && d.state === 'a_contacter' && !d.refus && !d.nextRelance);
   const contactsToday = store.data.events.filter((e) => e.type === T.CONTACT && e.date === today);
+  const auto = Math.max(0, cfg.objectifJour - contactsToday.length - overdue.length - tod.length);
+  const plan = L.nextNewProspects(D.list, [], auto + getExtra());
   return { overdue, tod, plan, contactsToday };
 }
 function sendLabel(compte) { return `${ICON.wa} Ouvrir ${esc(appLabel(compte))}`; }
@@ -1022,12 +1024,12 @@ function renderToday() {
         <span class="progress"><i style="width:${Math.min(100, goal ? (n / goal) * 100 : 0)}%"></i></span></button>
       <div class="accounts">${perAccount.map(([c, k]) => `<span class="acc ${k > cfg.objectifCompte ? 'over' : ''}">${esc(c)} : ${k} / ${cfg.objectifCompte}${k > cfg.objectifCompte ? ' ⚠' : ''}</span>`).join('')}</div>
     </section>
-    <div class="btn-row"><button type="button" class="btn" data-act="add-30">Ajouter les 30 suivants à ma journée</button>
+    <div class="btn-row"><button type="button" class="btn" data-act="add-30">Ajouter 30 prospects de plus</button>
       <button type="button" class="btn ghost" data-act="vcf">Exporter les contacts de ma journée (.vcf)</button></div>
-    ${!total ? `<p class="empty">Rien à faire pour l'instant. Ajoute des nouveaux prospects à ta journée.</p>` : ''}
+    ${!total ? `<p class="empty">${n >= goal ? 'Objectif du jour atteint, bravo ! Tu peux ajouter 30 prospects de plus si tu veux continuer.' : 'Plus aucun prospect « à envoyer » avec un numéro valide.'}</p>` : ''}
     ${overdue.length ? `<h3 class="section">Relances en retard <span class="count">${overdue.length}</span></h3>${overdue.map((d, i) => taskCard(d, i, 'late')).join('')}` : ''}
     ${tod.length ? `<h3 class="section">Relances du jour <span class="count">${tod.length}</span></h3>${tod.map((d, i) => taskCard(d, i + overdue.length, 'today')).join('')}` : ''}
-    ${plan.length ? `<h3 class="section">Nouveaux prospects <span class="count">${plan.length}</span></h3>${planCards}` : ''}
+    ${plan.length ? `<h3 class="section">Nouveaux prospects <span class="count">${plan.length}</span></h3><p class="small muted">Pris automatiquement dans l'ordre de ton fichier pour atteindre ${goal} aujourd'hui.</p>${planCards}` : ''}
     <p class="small muted center">Aucun message n'est envoyé automatiquement : c'est toi qui appuies sur Envoyer dans WhatsApp.</p>`;
 }
 async function todayDone(card) {
@@ -1041,11 +1043,13 @@ async function todayDone(card) {
     compte_whatsapp: card.dataset.compte || currentCompte(),
   };
   card.classList.add('done');
+  if (tab === 'envois') ui.envoiOpen = nextPendingEnvoi(d.id);
   const next = card.nextElementSibling?.matches('.task') ? card.nextElementSibling : card.parentElement.querySelectorAll('.task')[[...card.parentElement.querySelectorAll('.task')].indexOf(card) + 1];
   const nextId = next?.dataset.pid;
   await commit([ev]);
   toast(`${d.p.nom} : ${L.relanceLabel(num)} enregistré${ev.prochaine_relance ? `, prochaine relance le ${fmtD(ev.prochaine_relance)}` : ' (dernier message : clôturé)'}.`);
-  if (nextId) $(`.task[data-pid="${CSS.escape(nextId)}"]`)?.scrollIntoView({ block: 'start', behavior: 'smooth' });
+  const target = tab === 'envois' ? ui.envoiOpen : nextId;
+  if (target) $(`.task[data-pid="${CSS.escape(target)}"]`)?.scrollIntoView({ block: 'start', behavior: 'smooth' });
 }
 async function reportRelance(d) {
   const days = await dialog({ title: `Reporter la relance de ${d.p.nom}`, body: '<p>Reporter de combien de jours ?</p>',
@@ -1053,7 +1057,6 @@ async function reportRelance(d) {
   if (!days) return;
   const date = L.addDays(today, days);
   await commit([{ ...baseEvent(T.NOTE, d.p, { date: today, heure: L.roundHalfHour(L.nowHM()) }), etape: ETAPES.AUCUNE, prochaine_relance: date, note: `Relance reportée de ${plural(days, 'jour')}` }]);
-  setPlan(getPlan().filter((x) => x !== d.id));
   toast(`Relance reportée au ${fmtD(date)}.`);
 }
 async function markRefus(d) {
@@ -1070,6 +1073,92 @@ function exportVcf() {
   if (!ok.length) { toast('Aucun contact à exporter (liste vide ou numéros à vérifier).'); return; }
   download(`contacts-journee-${today}.vcf`, L.buildVCard(ok, cfg.formatVcard, cfg.indicatif), 'text/vcard;charset=utf-8');
   toast(`${plural(ok.length, 'contact exporté', 'contacts exportés')}${items.length > ok.length ? ` (${items.length - ok.length} numéros à vérifier exclus)` : ''}.`);
+}
+
+// ------------------------------------------------------------------ écran Envois (comme le fichier Excel)
+// Toute la file des messages, rangée par secteur et bloc de visuel, avec la position « 3/13 » dans le bloc.
+function envoiStatus(d) {
+  if (d.refus) return ['Ne pas contacter', 'bad', 'autre'];
+  if (d.isClient) return ['Client', 'good', 'envoye'];
+  if (d.hasReplied) return [d.etiquette || 'A répondu', 'ok', 'envoye'];
+  if (d.nbMessages) return [`Envoyé le ${fmtD(d.firstContact.date)}${d.nbRelances ? ` · ${L.relanceLabel(d.maxNum)}` : ''}`, 'info', 'envoye'];
+  if (!d.phone.ok) return ['Numéro à vérifier', 'warn', 'autre'];
+  if (d.etapeActive) return [d.stateLabel, 'muted', 'autre'];
+  if (d.nextRelance) return [`Reporté au ${fmtD(d.nextRelance)}`, 'muted', 'a_envoyer'];
+  return ['À envoyer', 'accent', 'a_envoyer'];
+}
+let envoiCache = { key: '', blocs: [] };
+function envoiBlocs() {
+  const key = `${store.data.events.length}-${store.data.prospects.length}-${today}-${store.data.events[store.data.events.length - 1]?.id}`;
+  if (envoiCache.key === key) return envoiCache.blocs;
+  const m = new Map();
+  for (const d of [...D.list].sort((a, b) => L.byPriority(a.p, b.p))) {
+    const k = `${d.p.secteur || 'Sans secteur'}|${d.p.visuel || ''}`;
+    if (!m.has(k)) m.set(k, { key: k, secteur: d.p.secteur || 'Sans secteur', visuel: d.p.visuel || '', items: [] });
+    m.get(k).items.push(d);
+  }
+  const blocs = [...m.values()];
+  for (const b of blocs) {
+    b.items = b.items.map((d, i) => ({ d, pos: i + 1, st: envoiStatus(d) }));
+    b.reste = b.items.filter((x) => x.st[2] === 'a_envoyer').length;
+    b.envoyes = b.items.filter((x) => x.st[2] === 'envoye').length;
+    b.label = `${b.secteur}${b.visuel ? ` · Visuel ${b.visuel}` : ''}`;
+  }
+  envoiCache = { key, blocs };
+  return blocs;
+}
+const ENVOI_STATUTS = [['a_envoyer', 'À envoyer'], ['envoye', 'Envoyés'], ['tous', 'Tous']];
+function envoiVisible() {
+  const blocs = envoiBlocs();
+  if (ui.envoiBloc == null || !blocs.some((b) => b.key === ui.envoiBloc)) ui.envoiBloc = (blocs.find((b) => b.reste) || blocs[0] || {}).key || '';
+  const q = ui.envoiQuery.trim();
+  const ids = q ? new Set(L.searchProspects(P, q, { limit: 2000 }).map((p) => p.id)) : null;
+  const list = [];
+  for (const b of blocs) {
+    if (!q && b.key !== ui.envoiBloc) continue;
+    for (const x of b.items) {
+      if (ids && !ids.has(x.d.id)) continue;
+      if (ui.envoiStatut !== 'tous' && x.st[2] !== ui.envoiStatut) continue;
+      list.push({ ...x, bloc: b });
+    }
+  }
+  return list;
+}
+function nextPendingEnvoi(afterId) {
+  const list = envoiVisible().filter((x) => x.st[2] === 'a_envoyer');
+  const i = list.findIndex((x) => x.d.id === afterId);
+  return (list[i + 1] || list.find((x) => x.d.id !== afterId) || {}).d?.id || null;
+}
+function envoiListHtml() {
+  const list = envoiVisible();
+  if (!list.length) return `<p class="empty">${ui.envoiQuery ? 'Aucun prospect trouvé.' : 'Rien dans ce bloc pour ce filtre. Choisis un autre bloc.'}</p>`;
+  let lastBloc = null;
+  return list.slice(0, 300).map((x, i) => {
+    const head = ui.envoiQuery && x.bloc !== lastBloc ? `<h4 class="group">${esc(x.bloc.label)}</h4>` : '';
+    lastBloc = x.bloc;
+    const total = x.bloc.items.length;
+    if (ui.envoiOpen === x.d.id) return `${head}<div class="envoi-open"><p class="small muted">${esc(x.bloc.label)} · ${x.pos}/${total}</p>${taskCard(x.d, x.pos - 1, x.st[2] === 'a_envoyer' ? 'new' : 'today')}</div>`;
+    return `${head}<button type="button" class="row erow" data-act="envoi-open" data-pid="${esc(x.d.id)}">
+      <span class="pos">${x.pos}/${total}</span><span class="prow-main"><b>${esc(x.d.p.nom)}</b><span class="small muted">${esc([x.d.p.ville, x.d.p.pays].filter(Boolean).join(', '))}</span></span>
+      ${pill(x.st[0], x.st[1])}</button>`;
+  }).join('') + (list.length > 300 ? `<p class="small muted center">… ${list.length - 300} autres : affine la recherche.</p>` : '');
+}
+function renderEnvois() {
+  const blocs = envoiBlocs();
+  envoiVisible();
+  const totalReste = blocs.reduce((s, b) => s + b.reste, 0);
+  const totalEnv = blocs.reduce((s, b) => s + b.envoyes, 0);
+  const cur = blocs.find((b) => b.key === ui.envoiBloc);
+  return `<section class="banner"><p class="date-plain">Messages à distribuer</p>
+      <p><b>${totalReste}</b> à envoyer · <b>${totalEnv}</b> déjà envoyés</p>
+      <label class="field compact"><span class="label">Bloc (secteur · visuel)</span>
+      <select id="envoiBloc">${blocs.map((b) => `<option value="${esc(b.key)}" ${b.key === ui.envoiBloc ? 'selected' : ''}>${esc(b.label)} — ${b.reste} à envoyer / ${b.items.length}</option>`).join('')}</select></label>
+      ${cur ? `<span class="progress"><i style="width:${cur.items.length ? Math.round((cur.envoyes / cur.items.length) * 100) : 0}%"></i></span><p class="small muted">${cur.envoyes} envoyés sur ${cur.items.length} dans ce bloc${cur.visuel ? ` · visuel à joindre : ${esc(cur.visuel)}` : ''}</p>` : ''}
+    </section>
+    <div class="searchbar"><input type="search" id="envoiSearch" placeholder="Chercher un prospect (tous les blocs)" value="${esc(ui.envoiQuery)}" autocomplete="off">${micBtn()}</div>
+    <div class="filters-row">${ENVOI_STATUTS.map(([k, lab]) => `<button type="button" aria-selected="${ui.envoiStatut === k}" data-act="envoi-statut" data-f="${k}">${lab}</button>`).join('')}</div>
+    <p class="small muted">Touche une ligne pour voir le message prêt, ouvrir WhatsApp puis appuyer sur « Fait » : la ligne suivante s'ouvre toute seule.</p>
+    <div id="envoiList">${envoiListHtml()}</div>`;
 }
 
 // ------------------------------------------------------------------ écran Saisir (§4.1)
@@ -1297,11 +1386,16 @@ function render() {
   document.body.classList.remove('setup');
   const view = $('#view');
   const y = window.scrollY;
-  const fn = { today: renderToday, saisir: renderSaisir, suivi: renderSuivi, clients: renderClients, bilan: renderBilan }[tab] || renderToday;
-  const titles = { today: 'Aujourd\'hui', saisir: 'Saisir', suivi: 'Suivi', clients: 'Clients', bilan: 'Bilan' };
+  const fn = { today: renderToday, envois: renderEnvois, saisir: renderSaisir, suivi: renderSuivi, clients: renderClients, bilan: renderBilan }[tab] || renderToday;
+  const titles = { today: 'Aujourd\'hui', envois: 'Envois', saisir: 'Saisir', suivi: 'Suivi', clients: 'Clients', bilan: 'Bilan' };
   $('#topTitle').textContent = titles[tab];
   view.innerHTML = fn();
   $$('.tabs [data-tab]').forEach((b) => b.setAttribute('aria-current', String(b.dataset.tab === tab)));
+  if (tab === 'envois') {
+    $('#envoiBloc').addEventListener('change', (e) => { ui.envoiBloc = e.target.value; ui.envoiOpen = null; render(); window.scrollTo(0, 0); });
+    const s = $('#envoiSearch');
+    s.addEventListener('input', () => { ui.envoiQuery = s.value; $('#envoiList').innerHTML = envoiListHtml(); });
+  }
   if (tab === 'suivi') {
     const s = $('#suiviSearch');
     s.addEventListener('input', () => { ui.suiviQuery = s.value; ui.suiviLimit = 80; $('#suiviList').innerHTML = suiviListHtml(); });
@@ -1337,14 +1431,20 @@ const ACT = {
   lots: () => openLots(),
   filter: (b) => { ui.suiviFilter = b.dataset.f; ui.suiviLimit = 80; render(); },
   cfilter: (b) => { ui.clientFilter = b.dataset.f; render(); },
+  'envoi-open': (b) => {
+    ui.envoiOpen = b.dataset.pid; $('#envoiList').innerHTML = envoiListHtml();
+    $(`.task[data-pid="${CSS.escape(ui.envoiOpen)}"]`)?.scrollIntoView({ block: 'start', behavior: 'smooth' });
+  },
+  'envoi-statut': (b) => { ui.envoiStatut = b.dataset.f; ui.envoiOpen = null; render(); },
   more: () => { ui.suiviLimit += 200; $('#suiviList').innerHTML = suiviListHtml(); },
   'export-csv': () => exportCSV(),
   'copy-table': () => copyBilan(),
   copy: async (b) => toast((await copyText(b.dataset.text)) ? 'Copié.' : 'Copie impossible.'),
   'add-30': () => {
-    const added = L.nextNewProspects(D.list, getPlan(), 30);
-    if (!added.length) { toast('Plus aucun prospect « à contacter » avec un numéro valide.'); return; }
-    setPlan([...getPlan(), ...added.map((d) => d.id)]); render(); toast(`${plural(added.length, 'prospect ajouté', 'prospects ajoutés')} à ta journée.`);
+    const before = todayData().plan.length;
+    LS.set(extraKey(), String(getExtra() + 30)); render();
+    const added = todayData().plan.length - before;
+    toast(added ? `${plural(added, 'prospect ajouté', 'prospects ajoutés')} à ta journée.` : 'Plus aucun prospect « à envoyer » avec un numéro valide.');
   },
   vcf: () => exportVcf(),
   'today-wa': (b) => {

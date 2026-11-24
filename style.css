@@ -79,7 +79,7 @@ code { font-size: .85em; background: var(--surface-2); padding: 1px 4px; border-
 
 /* ---------------------------------------------------------------- navigation du bas */
 .tabs {
-  position: fixed; bottom: 0; left: 0; right: 0; z-index: 30; display: grid; grid-template-columns: repeat(5, 1fr);
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 30; display: grid; grid-template-columns: repeat(6, 1fr);
   height: calc(var(--nav-h) + env(safe-area-inset-bottom)); padding-bottom: env(safe-area-inset-bottom);
   background: var(--surface); border-top: 1px solid var(--border);
 }
@@ -320,3 +320,12 @@ hr { border: 0; border-top: 1px solid var(--border); margin: 18px 0; }
 .switch-hint { margin: 8px 0 0; padding: 8px 10px; border-radius: 10px; background: var(--warn-bg); color: var(--warn); font-weight: 700; font-size: .88rem; }
 .wa-fallback:empty { display: none; }
 .wa-fallback .btn { width: 100%; }
+
+.erow { flex-direction: row; align-items: center; gap: 10px; }
+.erow .prow-main { flex: 1; min-width: 0; }
+.erow .pos { flex: none; min-width: 44px; font-weight: 800; color: var(--brand); font-size: .85rem; }
+.erow .pill { flex: none; max-width: 45%; overflow: hidden; text-overflow: ellipsis; }
+.envoi-open { margin: 10px 0; }
+.envoi-open > p { margin: 0 0 -4px 4px; }
+.tabs button span { white-space: nowrap; }
+.banner .date-plain { margin: 0; font-weight: 700; color: var(--muted); }

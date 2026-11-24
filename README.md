@@ -150,7 +150,7 @@ Règles :
 
 ### Aujourd'hui (écran d'accueil)
 - Objectif du jour (50 par défaut, appuie sur le compteur pour le changer) et compteur par compte WhatsApp (20 conseillé par compte, alerte ⚠ au-delà).
-- La liste : 1) relances en retard, 2) relances du jour, 3) nouveaux prospects. **« Ajouter les 30 suivants à ma journée »** prend les 30 prochains prospects « à contacter » par priorité, regroupés par code visuel.
+- La liste **se remplit toute seule** : 1) relances en retard, 2) relances du jour, 3) nouveaux prospects pris dans l'ordre de priorité de ton fichier (regroupés par code visuel), autant qu'il en faut pour atteindre l'objectif du jour. Chaque « Fait » fait monter le compteur ; quand l'objectif est atteint, la liste s'arrête. **« Ajouter 30 prospects de plus »** permet de dépasser l'objectif.
 - Chaque ligne affiche le message prêt (modifiable) et un sélecteur **« Envoyer avec : Business 1 / Business 2 / Messenger »** (dernier choix mémorisé, modifiable ligne par ligne). Le bouton **Ouvrir WhatsApp Business** ou **Ouvrir WhatsApp** ouvre la conversation **dans la bonne application** avec le message déjà écrit : tu n'as qu'à appuyer sur Envoyer. Puis **Fait** : l'envoi est enregistré (bon numéro de relance, heure arrondie, **compte choisi sur la ligne**), la prochaine relance est calculée et la ligne suivante s'affiche.
 - Si deux comptes sont dans la **même application** (WhatsApp Business avec deux comptes, ou application clonée), l'application ne peut pas choisir le compte à ta place : un rappel jaune « bascule sur le compte X avant d'envoyer » s'affiche. L'application de chaque compte se règle dans Réglages > « Comptes et applications WhatsApp » (par défaut : Business 1 et Business 2 → WhatsApp Business, Messenger → WhatsApp).
 
@@ -171,6 +171,12 @@ Le lien `wa.me` ouvre l'application WhatsApp **par défaut** du téléphone. Pou
 Garde le premier format qui ouvre la bonne application avec le texte prérempli ; le choix est mémorisé sur ce téléphone. Sur ordinateur, les liens wa.me sont toujours utilisés.
 - Boutons rapides : **Il a répondu**, **Refus complet**, **Reporter…** (1, 2, 3, 7 ou 14 jours).
 - **Exporter les contacts de ma journée (.vcf)** : export de secours (voir §6 bis). Les numéros à vérifier et les « Ne pas contacter » sont exclus.
+
+### Envois (comme ton fichier Excel)
+Toute la file des messages, rangée **par bloc** (secteur · visuel, ex. « COMMERCE · Visuel CE1 »), avec la position dans le bloc (« 3/24 ») et le statut de chaque prospect (À envoyer, Envoyé le…, a répondu, Numéro à vérifier, Ne pas contacter).
+- Choisis un bloc dans la liste déroulante (il affiche combien il en reste) ; filtres **À envoyer / Envoyés / Tous** ; recherche dans tous les blocs.
+- Touche une ligne : le message prêt s'ouvre avec « Envoyer avec », **Ouvrir WhatsApp** et **Fait**. Après « Fait », la ligne suivante du bloc s'ouvre toute seule.
+- La barre de progression montre l'avancement du bloc et rappelle le **visuel à joindre**.
 
 ### Saisir
 - **J'ai contacté des prospects** : tape ou dicte plusieurs noms (« Monsieur Ali, Alain et Koogg », ou épelé « K-O-O-G-G »). Une seule correspondance = ajout direct ; plusieurs = tu choisis (jusqu'à 6, avec la ville) ; aucune = tu peux le créer comme nouveau prospect (ID `NEW-…`). Puis un seul réglage pour tout le lot : type, modèle, compte, date, heure, prochaine relance, texte.
@@ -263,7 +269,7 @@ Si un jour tu veux automatiser, la seule voie autorisée est la **WhatsApp Busin
 - **Types de message** : « Relance 4 » ajouté à la liste (les règles prévoient 4 relances). « Autre » prend le numéro suivant de l'historique du prospect.
 - **Refus/perte puis paiement** : si un prospect « perdu » ou « refus » répond, reçoit un devis ou paie ensuite, l'état suit ce nouvel événement.
 - **« Pas intéressé pour le moment »** existe à la fois comme étiquette de réponse et comme étape. L'étape met le prospect en pause (plus de relance), sauf si tu indiques une date « Recontacter le ».
-- **Liste du jour** (« Ajouter les 30 suivants ») : enregistrée sur le téléphone, pour la journée en cours.
+- **Liste du jour** : calculée automatiquement (objectif du jour − envois déjà faits − relances dues). Le nombre de prospects ajoutés « en plus » est mémorisé sur le téléphone, pour la journée en cours.
 - **Nouveaux prospects du récapitulatif e-mail** : objectif du jour − relances dues (dans la limite des prospects à contacter).
 - **Variable `{nom}`** : dans les modèles, `{prénom}` = premier mot du nom (sans civilité) et `{nom}` = le reste ; `{nom_complet}` ajouté pour « Prénom Nom ». Les modèles de relance par défaut utilisent `{civilité} {nom_complet}`.
 - **Numéro de relance** : `numero_relance` = 0 pour le premier message, 1 à 4 pour les relances ; dans l'import, `numero_relance_faite` = nombre de relances déjà faites.

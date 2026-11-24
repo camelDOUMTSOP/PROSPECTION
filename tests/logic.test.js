@@ -150,6 +150,9 @@ test('liens WhatsApp ciblés et comptes', () => {
   assert.equal(l, 'intent://send?phone=237600000001&text=Bonjour%20%26%20merci#Intent;scheme=whatsapp;package=com.whatsapp.w4b;S.browser_fallback_url=https%3A%2F%2Fwa.me%2F237600000001%3Ftext%3DBonjour%2520%2526%2520merci;end');
   assert.match(L.waAppLink('237600000001', 'x', 'messenger', 'smsto'), /^intent:\/\/send\/\?phone=237600000001&text=x#Intent;scheme=smsto;package=com\.whatsapp;/);
   assert.equal(L.waAppLink('237600000001', 'x', 'business', 'wame'), 'https://wa.me/237600000001?text=x');
+  const ch = L.waAppLink('237600000001', 'x', 'business', 'choix');
+  assert.equal(ch, 'intent://send?phone=237600000001&text=x#Intent;scheme=whatsapp;S.browser_fallback_url=https%3A%2F%2Fwa.me%2F237600000001%3Ftext%3Dx;end');
+  assert.ok(!ch.includes('package='), 'aucune application imposée : Android propose le choix');
   const c2 = L.parseConfig({ applis_comptes: 'Business 1: business | Business 2: messenger' });
   assert.equal(c2.appOf('Business 2'), 'messenger');
 });

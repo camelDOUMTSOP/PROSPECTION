@@ -944,8 +944,8 @@ function openFiche(id) {
 
 // ------------------------------------------------------------------ ouverture de WhatsApp (§4.6)
 const IS_ANDROID = /Android/i.test(navigator.userAgent);
-const LINK_MODES = [['intent', 'Intent (recommandé)'], ['smsto', 'Intent smsto'], ['wame', 'wa.me seulement']];
-const linkMode = () => (IS_ANDROID ? LS.get('linkMode', 'intent') : 'wame');
+const LINK_MODES = [['choix', 'Me demander l\'application à chaque fois (recommandé)'], ['intent', 'Ouvrir directement l\'application du compte'], ['smsto', 'Variante smsto'], ['wame', 'wa.me seulement']];
+const linkMode = () => (IS_ANDROID ? LS.get('linkMode2', 'choix') : 'wame');
 const currentCompte = () => { const c = LS.get('compte', ''); return cfg.comptes.includes(c) ? c : (cfg.comptes[0] || ''); };
 const appLabel = (compte) => L.WA_APPS[cfg.appOf(compte)].label;
 function waHref(number, text, app) { return L.waAppLink(number, text, app, linkMode()); }
@@ -984,7 +984,7 @@ function todayData() {
   const plan = L.nextNewProspects(D.list, [], auto + getExtra());
   return { overdue, tod, plan, contactsToday };
 }
-function sendLabel(compte) { return `${ICON.wa} Ouvrir ${esc(appLabel(compte))}`; }
+function sendLabel(compte) { return linkMode() === 'choix' || linkMode() === 'wame' ? `${ICON.wa} Ouvrir WhatsApp` : `${ICON.wa} Ouvrir ${esc(appLabel(compte))}`; }
 function updateCardSend(card) {
   const compte = card.dataset.compte;
   const a = $('[data-act="today-wa"]', card); if (a) a.innerHTML = sendLabel(compte);
@@ -1110,12 +1110,12 @@ function envoiBlocs() {
 const ENVOI_STATUTS = [['a_envoyer', 'À envoyer'], ['envoye', 'Envoyés'], ['tous', 'Tous']];
 function envoiVisible() {
   const blocs = envoiBlocs();
-  if (ui.envoiBloc == null || !blocs.some((b) => b.key === ui.envoiBloc)) ui.envoiBloc = (blocs.find((b) => b.reste) || blocs[0] || {}).key || '';
+  if (ui.envoiBloc == null || (ui.envoiBloc !== '*' && !blocs.some((b) => b.key === ui.envoiBloc))) ui.envoiBloc = (blocs.find((b) => b.reste) || blocs[0] || {}).key || '';
   const q = ui.envoiQuery.trim();
   const ids = q ? new Set(L.searchProspects(P, q, { limit: 2000 }).map((p) => p.id)) : null;
   const list = [];
   for (const b of blocs) {
-    if (!q && b.key !== ui.envoiBloc) continue;
+    if (!q && ui.envoiBloc !== '*' && b.key !== ui.envoiBloc) continue;
     for (const x of b.items) {
       if (ids && !ids.has(x.d.id)) continue;
       if (ui.envoiStatut !== 'tous' && x.st[2] !== ui.envoiStatut) continue;
@@ -1129,35 +1129,47 @@ function nextPendingEnvoi(afterId) {
   const i = list.findIndex((x) => x.d.id === afterId);
   return (list[i + 1] || list.find((x) => x.d.id !== afterId) || {}).d?.id || null;
 }
+function envoiCard(x, total) {
+  const d = x.d; const pending = x.st[2] === 'a_envoyer';
+  const sentMsg = d.firstContact && d.firstContact.message;
+  const msg = pending || !sentMsg ? L.messageFor(d, cfg, x.pos - 1) : sentMsg;
+  const compte = currentCompte();
+  const num = d.phone.ok ? d.phone.intl : (d.p.numero || '—');
+  const rows = Math.min(10, Math.max(3, Math.ceil(msg.length / 42) + (msg.match(/\n/g) || []).length));
+  return `<article class="task ecard ${pending ? '' : 'sent'}" data-pid="${esc(d.id)}" data-compte="${esc(compte)}">
+    <div class="ehead"><span class="pos">${x.pos}/${total}</span><button type="button" class="name-btn" data-act="fiche" data-pid="${esc(d.id)}">${esc(d.p.nom)}</button>${pill(x.st[0], x.st[1])}</div>
+    <p class="small muted">${esc([d.p.ville, d.p.pays].filter(Boolean).join(', '))} · <span class="${d.refus ? 'danger-text' : ''}">${esc(num)}</span>${d.p.visuel ? ` · visuel ${esc(d.p.visuel)}` : ''}</p>
+    <span class="small muted elabel">${pending ? 'Message à envoyer' : 'Message envoyé'}</span>
+    <textarea class="msg" rows="${rows}" aria-label="Message">${esc(msg)}</textarea>
+    <div class="btn-row ${pending ? 'two' : ''}">${d.phone.ok && !d.refus ? `<a class="btn wa" href="${esc(L.waLink(d.phone.wa, msg))}" target="_blank" rel="noopener" data-act="today-wa">${sendLabel(compte)}</a>`
+      : `<span class="btn disabled">${esc(d.refus ? 'Ne pas contacter' : d.phone.reason)}</span>`}
+      ${pending ? `<button type="button" class="btn primary" data-act="today-done">${ICON.check} Envoyé</button>` : ''}</div>
+    <div class="wa-fallback"></div></article>`;
+}
 function envoiListHtml() {
   const list = envoiVisible();
   if (!list.length) return `<p class="empty">${ui.envoiQuery ? 'Aucun prospect trouvé.' : 'Rien dans ce bloc pour ce filtre. Choisis un autre bloc.'}</p>`;
   let lastBloc = null;
-  return list.slice(0, 300).map((x, i) => {
-    const head = ui.envoiQuery && x.bloc !== lastBloc ? `<h4 class="group">${esc(x.bloc.label)}</h4>` : '';
+  const shown = list.slice(0, ui.envoiLimit || 60);
+  return shown.map((x) => {
+    const head = x.bloc !== lastBloc && (ui.envoiQuery || ui.envoiBloc === '*') ? `<h4 class="group">${esc(x.bloc.label)}</h4>` : '';
     lastBloc = x.bloc;
-    const total = x.bloc.items.length;
-    if (ui.envoiOpen === x.d.id) return `${head}<div class="envoi-open"><p class="small muted">${esc(x.bloc.label)} · ${x.pos}/${total}</p>${taskCard(x.d, x.pos - 1, x.st[2] === 'a_envoyer' ? 'new' : 'today')}</div>`;
-    return `${head}<button type="button" class="row erow" data-act="envoi-open" data-pid="${esc(x.d.id)}">
-      <span class="pos">${x.pos}/${total}</span><span class="prow-main"><b>${esc(x.d.p.nom)}</b><span class="small muted">${esc([x.d.p.ville, x.d.p.pays].filter(Boolean).join(', '))}</span></span>
-      ${pill(x.st[0], x.st[1])}</button>`;
-  }).join('') + (list.length > 300 ? `<p class="small muted center">… ${list.length - 300} autres : affine la recherche.</p>` : '');
+    return head + envoiCard(x, x.bloc.items.length);
+  }).join('') + (list.length > shown.length ? `<button type="button" class="btn" data-act="envoi-more">Afficher la suite (${list.length - shown.length} restants)</button>` : '');
 }
 function renderEnvois() {
   const blocs = envoiBlocs();
   envoiVisible();
-  const totalReste = blocs.reduce((s, b) => s + b.reste, 0);
-  const totalEnv = blocs.reduce((s, b) => s + b.envoyes, 0);
+  const totalReste = blocs.reduce((a, b) => a + b.reste, 0);
+  const totalEnv = blocs.reduce((a, b) => a + b.envoyes, 0);
   const cur = blocs.find((b) => b.key === ui.envoiBloc);
-  return `<section class="banner"><p class="date-plain">Messages à distribuer</p>
-      <p><b>${totalReste}</b> à envoyer · <b>${totalEnv}</b> déjà envoyés</p>
-      <label class="field compact"><span class="label">Bloc (secteur · visuel)</span>
-      <select id="envoiBloc">${blocs.map((b) => `<option value="${esc(b.key)}" ${b.key === ui.envoiBloc ? 'selected' : ''}>${esc(b.label)} — ${b.reste} à envoyer / ${b.items.length}</option>`).join('')}</select></label>
+  return `<section class="banner compact-banner"><p class="date-plain"><b>${totalReste}</b> à envoyer · <b>${totalEnv}</b> envoyés</p>
+      <select id="envoiBloc" aria-label="Bloc (secteur · visuel)"><option value="*" ${ui.envoiBloc === '*' ? 'selected' : ''}>Tous les prospects (ordre du fichier)</option>${blocs.map((b) => `<option value="${esc(b.key)}" ${b.key === ui.envoiBloc ? 'selected' : ''}>${esc(b.label)} — ${b.reste} à envoyer / ${b.items.length}</option>`).join('')}</select>
       ${cur ? `<span class="progress"><i style="width:${cur.items.length ? Math.round((cur.envoyes / cur.items.length) * 100) : 0}%"></i></span><p class="small muted">${cur.envoyes} envoyés sur ${cur.items.length} dans ce bloc${cur.visuel ? ` · visuel à joindre : ${esc(cur.visuel)}` : ''}</p>` : ''}
+      <div class="sendwith"><span class="small muted">Compte :</span>${chipsHtml('compte-now', cfg.comptes, currentCompte())}</div>
     </section>
     <div class="searchbar"><input type="search" id="envoiSearch" placeholder="Chercher un prospect (tous les blocs)" value="${esc(ui.envoiQuery)}" autocomplete="off">${micBtn()}</div>
     <div class="filters-row">${ENVOI_STATUTS.map(([k, lab]) => `<button type="button" aria-selected="${ui.envoiStatut === k}" data-act="envoi-statut" data-f="${k}">${lab}</button>`).join('')}</div>
-    <p class="small muted">Touche une ligne pour voir le message prêt, ouvrir WhatsApp puis appuyer sur « Fait » : la ligne suivante s'ouvre toute seule.</p>
     <div id="envoiList">${envoiListHtml()}</div>`;
 }
 
@@ -1392,9 +1404,9 @@ function render() {
   view.innerHTML = fn();
   $$('.tabs [data-tab]').forEach((b) => b.setAttribute('aria-current', String(b.dataset.tab === tab)));
   if (tab === 'envois') {
-    $('#envoiBloc').addEventListener('change', (e) => { ui.envoiBloc = e.target.value; ui.envoiOpen = null; render(); window.scrollTo(0, 0); });
+    $('#envoiBloc').addEventListener('change', (e) => { ui.envoiBloc = e.target.value; ui.envoiOpen = null; ui.envoiLimit = 60; render(); window.scrollTo(0, 0); });
     const s = $('#envoiSearch');
-    s.addEventListener('input', () => { ui.envoiQuery = s.value; $('#envoiList').innerHTML = envoiListHtml(); });
+    s.addEventListener('input', () => { ui.envoiQuery = s.value; ui.envoiLimit = 60; $('#envoiList').innerHTML = envoiListHtml(); });
   }
   if (tab === 'suivi') {
     const s = $('#suiviSearch');
@@ -1431,11 +1443,8 @@ const ACT = {
   lots: () => openLots(),
   filter: (b) => { ui.suiviFilter = b.dataset.f; ui.suiviLimit = 80; render(); },
   cfilter: (b) => { ui.clientFilter = b.dataset.f; render(); },
-  'envoi-open': (b) => {
-    ui.envoiOpen = b.dataset.pid; $('#envoiList').innerHTML = envoiListHtml();
-    $(`.task[data-pid="${CSS.escape(ui.envoiOpen)}"]`)?.scrollIntoView({ block: 'start', behavior: 'smooth' });
-  },
-  'envoi-statut': (b) => { ui.envoiStatut = b.dataset.f; ui.envoiOpen = null; render(); },
+  'envoi-more': () => { ui.envoiLimit = (ui.envoiLimit || 60) + 100; $('#envoiList').innerHTML = envoiListHtml(); },
+  'envoi-statut': (b) => { ui.envoiStatut = b.dataset.f; ui.envoiOpen = null; ui.envoiLimit = 60; render(); },
   more: () => { ui.suiviLimit += 200; $('#suiviList').innerHTML = suiviListHtml(); },
   'export-csv': () => exportCSV(),
   'copy-table': () => copyBilan(),
@@ -1473,7 +1482,7 @@ const ACT = {
     openWa(b, d.phone.wa, '', b.dataset.app, box);
   },
   'link-mode': (b) => {
-    LS.set('linkMode', b.dataset.mode);
+    LS.set('linkMode2', b.dataset.mode);
     $$('[data-act="link-mode"]').forEach((x) => x.setAttribute('aria-checked', String(x === b)));
     toast('Format des liens enregistré pour ce téléphone.');
   },
@@ -1517,6 +1526,13 @@ const ACT = {
 document.addEventListener('click', (e) => {
   const mic = e.target.closest('[data-mic]');
   if (mic) { e.preventDefault(); startDictation(mic); return; }
+  const cn = e.target.closest('[data-seg="compte-now"]');
+  if (cn) {
+    LS.set('compte', cn.dataset.value);
+    $$('[data-seg="compte-now"]').forEach((x) => x.setAttribute('aria-checked', String(x === cn)));
+    $$('.ecard').forEach((c) => { c.dataset.compte = cn.dataset.value; updateCardSend(c); });
+    return;
+  }
   const seg = e.target.closest('[data-seg="row-compte"]');
   if (seg) { const card = seg.closest('.task'); card.dataset.compte = seg.dataset.value; LS.set('compte', seg.dataset.value); updateCardSend(card); return; }
   const b = e.target.closest('[data-act]');

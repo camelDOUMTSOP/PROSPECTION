@@ -329,3 +329,14 @@ hr { border: 0; border-top: 1px solid var(--border); margin: 18px 0; }
 .envoi-open > p { margin: 0 0 -4px 4px; }
 .tabs button span { white-space: nowrap; }
 .banner .date-plain { margin: 0; font-weight: 700; color: var(--muted); }
+
+.ecard .ehead { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; }
+.ecard .pos { font-weight: 800; color: var(--brand); font-size: .85rem; }
+.ecard .elabel { display: block; margin: 6px 0 4px; font-weight: 700; }
+.ecard.sent { border-left: 5px solid var(--good); }
+.ecard.sent .msg { background: var(--surface-2); }
+
+.compact-banner { padding: 10px 12px; }
+.compact-banner > * { margin: 4px 0; }
+.compact-banner .progress { margin-top: 6px; }
+.compact-banner .sendwith .seg button { min-height: 40px; padding: 4px 10px; }

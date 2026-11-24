@@ -173,10 +173,14 @@ Garde le premier format qui ouvre la bonne application avec le texte prérempli 
 - **Exporter les contacts de ma journée (.vcf)** : export de secours (voir §6 bis). Les numéros à vérifier et les « Ne pas contacter » sont exclus.
 
 ### Envois (comme ton fichier Excel)
-Toute la file des messages, rangée **par bloc** (secteur · visuel, ex. « COMMERCE · Visuel CE1 »), avec la position dans le bloc (« 3/24 ») et le statut de chaque prospect (À envoyer, Envoyé le…, a répondu, Numéro à vérifier, Ne pas contacter).
-- Choisis un bloc dans la liste déroulante (il affiche combien il en reste) ; filtres **À envoyer / Envoyés / Tous** ; recherche dans tous les blocs.
-- Touche une ligne : le message prêt s'ouvre avec « Envoyer avec », **Ouvrir WhatsApp** et **Fait**. Après « Fait », la ligne suivante du bloc s'ouvre toute seule.
-- La barre de progression montre l'avancement du bloc et rappelle le **visuel à joindre**.
+Pour **chacun de tes prospects**, comme une ligne de ton fichier : la position dans le bloc (« 3/24 »), le **nom**, la ville et le numéro, le **message** (prêt à envoyer, ou celui déjà envoyé) et le lien **Ouvrir WhatsApp**.
+- Liste déroulante en haut : un bloc (secteur · visuel, avec le nombre restant) ou **« Tous les prospects »** dans l'ordre du fichier.
+- **Ouvrir WhatsApp** : Android te demande **« WhatsApp ou WhatsApp Business ? »** et ouvre la conversation avec le message déjà écrit. Tu n'as plus qu'à appuyer sur Envoyer.
+- Puis **Envoyé** : l'envoi est enregistré (avec le compte choisi en haut : Business 1, Business 2 ou Messenger), le prospect passe dans « Envoyés » et ses relances seront proposées automatiquement.
+- Filtres **À envoyer / Envoyés / Tous** et recherche dans tous les blocs.
+
+**Si Android ne te demande pas de choisir** et ouvre toujours la même application : tu as dû cocher « Toujours » un jour. Va dans Paramètres du téléphone > Applications > WhatsApp (puis WhatsApp Business) > **Ouvrir par défaut** > **Effacer les paramètres par défaut**. Le choix te sera de nouveau proposé.
+Autre réglage possible (Réglages de l'application > Liens WhatsApp) : « Ouvrir directement l'application du compte » ouvre WhatsApp Business pour Business 1 et 2, WhatsApp pour Messenger, sans demander.
 
 ### Saisir
 - **J'ai contacté des prospects** : tape ou dicte plusieurs noms (« Monsieur Ali, Alain et Koogg », ou épelé « K-O-O-G-G »). Une seule correspondance = ajout direct ; plusieurs = tu choisis (jusqu'à 6, avec la ville) ; aucune = tu peux le créer comme nouveau prospect (ID `NEW-…`). Puis un seul réglage pour tout le lot : type, modèle, compte, date, heure, prochaine relance, texte.

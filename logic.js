@@ -304,9 +304,12 @@ export function sameAppAccounts(compte, cfg) {
  */
 export function waAppLink(number, text, app, mode = 'intent') {
   const fallback = waLink(number, text);
+  const q = `phone=${number}${text ? `&text=${encodeURIComponent(text)}` : ''}`;
+  // 'choix' : aucune application imposée -> Android demande « WhatsApp ou WhatsApp Business ? »
+  // (sauf si une application a été réglée « toujours » par défaut dans le téléphone).
+  if (mode === 'choix') return `intent://send?${q}#Intent;scheme=whatsapp;S.browser_fallback_url=${encodeURIComponent(fallback)};end`;
   const a = WA_APPS[app];
   if (mode === 'wame' || !a) return fallback;
-  const q = `phone=${number}${text ? `&text=${encodeURIComponent(text)}` : ''}`;
   const tail = `package=${a.pkg};S.browser_fallback_url=${encodeURIComponent(fallback)};end`;
   return mode === 'smsto'
     ? `intent://send/?${q}#Intent;scheme=smsto;${tail}`

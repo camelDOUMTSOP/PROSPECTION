@@ -17,11 +17,9 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  deploy:
+  # 1) Tests puis préparation du site.
+  build:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
       - name: Tests (logique et Apps Script simulé)
@@ -30,5 +28,14 @@ jobs:
       - uses: actions/upload-pages-artifact@v3
         with:
           path: .
+
+  # 2) Publication, dans un job séparé (le fichier préparé est alors bien enregistré chez GitHub).
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
       - id: deployment
         uses: actions/deploy-pages@v4

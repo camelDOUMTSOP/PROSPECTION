@@ -190,14 +190,25 @@ export class Store extends EventTarget {
     const ctrl = new AbortController();
     const timer = setTimeout(() => ctrl.abort(), 45000);
     try {
-      const r = await fetch(this.url, {
-        method: 'POST', redirect: 'follow', signal: ctrl.signal,
-        // text/plain : évite la requête préalable CORS que l'Apps Script ne sait pas traiter.
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify({ token: this.token, action, payload }),
-      });
+      let r;
+      try {
+        r = await fetch(this.url, {
+          method: 'POST', redirect: 'follow', signal: ctrl.signal,
+          // text/plain : évite la requête préalable CORS que l'Apps Script ne sait pas traiter.
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({ token: this.token, action, payload }),
+        });
+      } catch (err) {
+        if (navigator.onLine === false) throw new Error('pas de réseau sur le téléphone.');
+        if (err.name === 'AbortError') throw new Error('le script n\'a pas répondu en 45 s.');
+        throw new Error('le script est injoignable. Vérifie que l\'adresse se termine par /exec et que le déploiement est en accès « Tout le monde ».');
+      }
       const text = await r.text();
-      try { return JSON.parse(text); } catch { throw new Error('Réponse inattendue du script (vérifiez le déploiement « Tout le monde »).'); }
+      try { return JSON.parse(text); } catch {
+        throw new Error(/<html|<!doctype/i.test(text)
+          ? 'le script a renvoyé une page Google au lieu des données : redéploie-le avec « Exécuter en tant que : Moi » et « Qui a accès : Tout le monde ».'
+          : `réponse inattendue du script (code ${r.status}).`);
+      }
     } finally { clearTimeout(timer); }
   }
 

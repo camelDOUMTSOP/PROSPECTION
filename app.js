@@ -1340,7 +1340,8 @@ function openSettings() {
     <section class="card"><h3>Connexion</h3>
       <p>${store.mode === 'demo' ? '<b>Mode démonstration</b> : données fictives enregistrées sur ce téléphone uniquement.' : 'Connecté à ton Google Sheet via l\'Apps Script.'}</p>
       <p class="small muted">État : ${esc(statusText)} · ${plural(store.queue.length, 'modification en attente', 'modifications en attente')}${store.lastSync ? ` · dernière synchro ${new Date(store.lastSync).toLocaleString('fr-FR', { timeZone: L.TZ })}` : ''}</p>
-      <p class="small muted">${plural(store.data.prospects.length, 'prospect')} · ${plural(store.data.events.length, 'événement')}</p>
+      ${store.statusDetail && store.status !== 'idle' ? `<p class="alert bad small">Détail : ${esc(store.statusDetail)}</p>` : ''}
+      <p class="small muted">${plural(store.data.prospects.length, 'prospect')} · ${plural(store.data.events.length, 'événement')}${store.mode === 'api' && store.url ? ` · script …${esc(store.url.slice(-18))}` : ''}</p>
       <div class="btn-row"><button type="button" class="btn" data-act="sync-now">Synchroniser maintenant</button><button type="button" class="btn" data-act="lots">Lots et annulations</button>
       <button type="button" class="btn" data-act="notif">Notifications</button><button type="button" class="btn danger-ghost" data-act="logout">${store.mode === 'demo' ? 'Quitter la démo' : 'Déconnecter ce téléphone'}</button></div></section>
     <section class="card"><h3>Liens WhatsApp (ce téléphone)</h3>
@@ -1539,7 +1540,11 @@ document.addEventListener('click', (e) => {
   if (b && ACT[b.dataset.act]) ACT[b.dataset.act](b, e);
 });
 $('#settingsBtn').addEventListener('click', () => (store.configured ? openSettings() : null));
-$('#syncBtn').addEventListener('click', () => store.sync(true));
+$('#syncBtn').addEventListener('click', async () => {
+  await store.sync(true);
+  if (store.status === 'idle') toast(`À jour : ${plural(store.data.prospects.length, 'prospect')}.`);
+  else toast(`Connexion impossible : ${store.statusDetail || store.status}`, 8000);
+});
 
 // ------------------------------------------------------------------ démarrage
 function notifyOnOpen() {

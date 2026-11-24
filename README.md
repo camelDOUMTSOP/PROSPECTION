@@ -133,7 +133,7 @@ Chaque prospect **ajouté après l'import** (nouveau prospect saisi dans un form
 Mise en place (une seule autorisation) :
 1. Dans l'éditeur Apps Script : menu de gauche **Services** (icône +) > **People API** > **Ajouter** (l'identifiant doit rester `People`). Si tu as collé `appsscript.json` (étape 1.4), c'est déjà fait.
 2. Dans le Google Sheet : menu **Prospection > Autoriser Google Contacts (une fois)**. Google demande l'accès à tes contacts : **Autoriser**. Cette autorisation suffit ensuite pour l'application.
-3. **Redéploie une nouvelle version** du script (Déployer > Gérer les déploiements > crayon > Nouvelle version), sinon l'application continue d'utiliser l'ancienne.
+3. Pas besoin de redéployer : l'autorisation suffit. (Un nouveau déploiement n'est nécessaire que si tu modifies le code du script : Déployer > Gérer les déploiements > crayon > Nouvelle version.)
 
 Règles :
 - **Jamais** pour les numéros « à vérifier » ni pour les prospects « Ne pas contacter ».
